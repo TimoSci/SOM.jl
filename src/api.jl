@@ -165,6 +165,15 @@ function classFrequencies(som::Som, data, classes)
 end
 
 
+```
+# The unified distance matrix representation of the SOM visualizes the
+distances between the neurons.
+```
+function umatrix(som::Som)
+    println("<<<CALLED UMATRIX>>>")
+end
+
+
 #
 #
 # Plotting functions:
