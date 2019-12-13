@@ -1,41 +1,26 @@
 using Crayons
-using ColorTypes
+# using ColorTypes
 
-# function plotDensity(som::Som)
-#
-#     # use population form the som itself, if no prediction is given as arg.
-#     #
-#     if predict == nothing
-#         population = som.population
-#     else
-#         population = makePopulation(som.nCodes, predict.index)
-#     end
-#
-#     if typeof(colormap) == Symbol
-#         colormap = string(colormap)
-#     end
-#
-#     if som.topol == :spherical
-#         drawSpherePopulation(som, population, detail, title,
-#                              paper, colormap, device, fileName)
-#     else
-#         drawPopulation(som, population, title, paper, colormap, device, fileName)
-#     end
-# end
+function print_density(som::Som)
+    population_to_array(som) |> print_greyscale_rectangle
+end
 
-const GREY_RANGE = 232:255
+function population_to_array(som)
+    xdim, ydim = som.xdim, som.ydim
+    a = zeros(xdim,ydim)
+    for n in 1:som.nCodes
+        x,y= som.indices[n,1:2]
+        a[x,y] = som.population[n]
+    end
+    return a
+end
 
-
-
-
-function greyscale_rectangle(data,io::IO = stdout)
-    # println(io, "Color cube, 6×6×6 (16..231):")
+function print_greyscale_rectangle(data,io::IO = stdout)
 
     f(x)= x*255 |> floor |> x->convert(Int,x)
     data = normalize01(data)
     data = map(f,data)
-    width = 10
-    height = 10
+    width, height = size(data)
 
     str = "██"
     for i in 1:width
