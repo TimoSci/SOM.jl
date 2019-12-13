@@ -165,19 +165,20 @@ function classFrequencies(som::Som, data, classes)
 end
 
 
-```
+"""
 The unified distance matrix representation of the SOM visualizes the
 distances between the neurons.
+"""
 
-```
 function umatrix(som::Som)
     println("<<<CALLED UMATRIX>>>")
 end
 
-```
+"""
 The training data density projects onto each neuron the density of *training data* points
 in the vicinity of each code vector.
-```
+It can be thought of as an analogue equivalent of som.population
+"""
 function train_density(som::Som,train,depth=4)
     train = copy(train)
     if som.norm != :none
