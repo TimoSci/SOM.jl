@@ -5,12 +5,21 @@ function print_density(som::Som)
     population_to_array(som) |> print_greyscale_rectangle
 end
 
-function population_to_array(som)
+function print_density(som::Som,train,neighbors=4)
+    densities = train_density(som,train,neighbors)
+    neuron_attribute_to_array(som::Som,densities) |> print_greyscale_rectangle
+end
+
+function population_to_array(som::Som)
+    neuron_attribute_to_array(som,som.population)
+end
+
+function neuron_attribute_to_array(som::Som,attribute)
     xdim, ydim = som.xdim, som.ydim
     a = zeros(xdim,ydim)
     for n in 1:som.nCodes
         x,y= som.indices[n,1:2]
-        a[x,y] = som.population[n]
+        a[x,y] = attribute[n]
     end
     return a
 end

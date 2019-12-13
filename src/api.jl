@@ -179,7 +179,7 @@ The training data density projects onto each neuron the density of *training dat
 in the vicinity of each code vector.
 It can be thought of as an analogue equivalent of som.population
 """
-function train_density(som::Som,train,depth=4)
+function train_density(som::Som,train,neighbors=4)
     train = copy(train)
     if som.norm != :none
         train = normTrainData(train, som.normParams)
@@ -188,7 +188,7 @@ function train_density(som::Som,train,depth=4)
     train = permutedims(train,(2,1))
     codes = permutedims(som.codes,(2,1))
     kd_tree = KDTree(train)
-    _, distances = knn(kd_tree, codes, depth) #TODO inball option
+    _, distances = knn(kd_tree, codes, neighbors) #TODO inball option
     map(x->mean(x),distances)
 end
 #
