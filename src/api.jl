@@ -166,14 +166,30 @@ end
 
 
 ```
-# The unified distance matrix representation of the SOM visualizes the
+The unified distance matrix representation of the SOM visualizes the
 distances between the neurons.
+
 ```
 function umatrix(som::Som)
     println("<<<CALLED UMATRIX>>>")
 end
 
-
+```
+The training data density projects onto each neuron the density of *training data* points
+in the vicinity of each code vector.
+```
+function train_density(som::Som,train,depth=4)
+    train = copy(train)
+    if som.norm != :none
+        train = normTrainData(train, som.normParams)
+    end
+    train = convert(Matrix,train)
+    train = permutedims(train,(2,1))
+    codes = permutedims(som.codes,(2,1))
+    kd_tree = KDTree(train)
+    _, distances = knn(kd_tree, codes, depth) #TODO inball option
+    map(x->mean(x),distances)
+end
 #
 #
 # Plotting functions:
