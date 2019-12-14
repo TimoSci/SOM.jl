@@ -167,7 +167,7 @@ end
 
 """
 The unified distance matrix representation of the SOM visualizes the
-distances between the neurons.
+distances between the neurons who are neighbors in the grid.
 """
 
 function umatrix(som::Som)
@@ -180,7 +180,13 @@ in the vicinity of each code vector.
 It can be thought of as an analogue equivalent of som.population
 """
 function train_density(som::Som,train,neighbors=4)
-    train = copy(train)
+    _, distances = nearest_neighbors(som::Som,train,neighbors) #TODO inball option
+    map(x->mean(x),distances)
+end
+
+
+function nearest_neighbors(som::Som,train,neighbors)
+    train = deepcopy(train)
     if som.norm != :none
         train = normTrainData(train, som.normParams)
     end
@@ -188,8 +194,7 @@ function train_density(som::Som,train,neighbors=4)
     train = permutedims(train,(2,1))
     codes = permutedims(som.codes,(2,1))
     kd_tree = KDTree(train)
-    _, distances = knn(kd_tree, codes, neighbors) #TODO inball option
-    map(x->mean(x),distances)
+    knn(kd_tree, codes, neighbors)
 end
 #
 #
