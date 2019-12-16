@@ -9,6 +9,36 @@ function print_density(som::Som,train,neighbors=4)
     train_density_to_array(som::Som,train,neighbors) |> print_greyscale_rectangle
 end
 
+function print_colored_text(som::Som,train,row_labels)
+    neighbors,_ = nearest_neighbors(som,train,1)
+    neighbors = map(x->x[1],neighbors)
+    labels = map(x-> row_labels[x] ,neighbors)
+    name_array = neuron_attribute_to_array(som,labels)
+    color_array = train_density_to_array(som,train)
+    print_greyscale_text(name_array,color_array)
+end
+
+function print_colored_text_uniq(som::Som,train,row_labels)
+    included = []
+    neighbors,_ = nearest_neighbors(som,train,10)
+    neighbors = map(neighbors) do set
+        # print(set)
+        i = popfirst!(set)
+        while ((i in included) && isempty(set))
+            i = popfirst!(set)
+        end
+        push!(included,i)
+        # print(i)
+        i
+    end
+    # neighbors = map(x->x[1],neighbors)
+    labels = map(x-> row_labels[x] ,neighbors)
+    name_array = neuron_attribute_to_array(som,labels)
+    color_array = train_density_to_array(som,train)
+    print_greyscale_text(name_array,color_array)
+end
+
+
 #
 #
 
@@ -21,14 +51,6 @@ function population_to_array(som::Som)
     neuron_attribute_to_array(som,som.population)
 end
 
-function print_colored_text(som::Som,train,row_labels)
-    neighbors,_ = nearest_neighbors(som,train,1)
-    neighbors = map(x->x[1],neighbors)
-    labels = map(x-> row_labels[x] ,neighbors)
-    name_array = neuron_attribute_to_array(som,labels)
-    color_array = train_density_to_array(som,train)
-    print_greyscale_text(name_array,color_array)
-end
 
 function neuron_attribute_to_array(som::Som,attribute::Array{String})
     xdim, ydim = som.xdim, som.ydim
