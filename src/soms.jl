@@ -109,6 +109,24 @@ end
 
 
 """
+    makePopulationStats(nCodes, vis)
+
+Return a vector of neuron populations expressed as vectors of indicies of traing data rows.
+"""
+function makePopulationStats(nCodes, vis)
+
+    population = fill([], nCodes)
+    for i in 1:nrow(vis)
+        stats = population[vis[i]] |> copy
+        push!(stats,i)
+        population[vis[i]] = stats
+    end
+
+    return population
+end
+
+
+"""
     makeClassFreqs(som, vis, classes)
 
 Return a DataFrame with class frequencies for all neurons.
