@@ -196,6 +196,15 @@ function nearest_neighbors(som::Som,train,neighbors)
     kd_tree = KDTree(train)
     knn(kd_tree, codes, neighbors)
 end
+
+"""
+The mean quantization error is the mean of the distance between each neuron and the
+nearest input vector. It is a diagnostic quantity used to judge the quality of learning.
+"""
+function mean_quantization_error(som::Som,train)
+    _, distances = nearest_neighbors(som,train,1)
+    map(x->x[1],distances) |> mean
+end
 #
 #
 # Plotting functions:
