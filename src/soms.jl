@@ -42,6 +42,7 @@ function doSom(x::Array{Float64}, codes::Array{Float64},
 
     numDat = nrow(x)
     numCodes = nrow(codes)
+    total_quantization_error = 0
 
     # Training:
     # 1) select random sample
@@ -52,7 +53,8 @@ function doSom(x::Array{Float64}, codes::Array{Float64},
     @time for s in 1:len
 
         sampl = rowSample(x)
-        winner = findWinner(codes, sampl)
+        winner, quantization_error = findWinnerAndDistance(codes, sampl)
+        total_quantization_error += quantization_error
 
         for i in 1:numCodes
             # v = view(codes, i, :)
@@ -63,7 +65,8 @@ function doSom(x::Array{Float64}, codes::Array{Float64},
 
         η -= Δη
         r -= Δr
-        next!(p)
+        # next!(p)
+        ProgressMeter.next!(p; showvalues = [(:mean_quantization_error,total_quantization_error/s)])
     end
 
     return codes

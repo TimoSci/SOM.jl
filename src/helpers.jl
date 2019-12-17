@@ -72,8 +72,8 @@ end
 
 Return index of the winner neuron for sample sampl.
 """
-function findWinner(cod, sampl)
 
+function findWinnerAndDistance(cod, sampl)
     dist = floatmax()
     winner = 1
     n = nrow(cod)
@@ -87,6 +87,12 @@ function findWinner(cod, sampl)
         end
     end
 
+    return (winner,dist)
+
+end
+
+function findWinner(cod, sampl)
+    winner,_ = findWinnerAndDistance(cod, sampl)
     return winner
 end
 
