@@ -5,7 +5,8 @@ client = Mongoc.Client()
 database = client["nomisnator-test"]
 collection = database["names"]
 mynames = Mongoc.find(collection) |> collect
-names_short = [ x["name"] for x= mynames if x["stats"]["count"] > 10000 ]
+names_short = [ x["name"] for x= mynames if x["stats"]["count"] > 10000 && x["sex"] == "M"]
+
 
 names_short |> unique!
 

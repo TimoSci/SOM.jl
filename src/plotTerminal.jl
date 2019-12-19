@@ -38,6 +38,18 @@ function print_colored_text_uniq(som::Som,train,row_labels)
     print_greyscale_text(name_array,color_array)
 end
 
+"""
+Attemps to map each training data row onto a unique neuron.
+Row labels most be ordered in order of preference (higher up more likely to
+be assigned to nearest neighbor neuron)
+"""
+function one_to_one_mapping(som::Som,train,row_labels)
+    mapping = fill("",som.nCodes)
+    neighbors, distances = nearest_neighbors(som::Som,train,16)
+    for pair in zip(row_labels,distances)
+
+    end
+end
 
 #
 #
