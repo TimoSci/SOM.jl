@@ -1,3 +1,5 @@
+using CUDA
+
 """
     doSom(train::Array, distMatrix, kernelFun, len, η,
             r, toroidal, rDecay, ηDecay)
@@ -18,6 +20,14 @@ This worker function is called by the high-level-API-functions
 - `rDecay`: if true, r decays to 0.0 during the training.
 - `ηDecay`: if true, learning rate η decays to 0.0 during the training.
 """
+function doSomGPU(x::CuArray, codes::CuArray,
+             dm::CuArray, kernelFun::Function, len::Int, η::Float64,
+             r::Number, toroidal::Bool, rDecay::Bool, ηDecay::Bool)
+end
+
+
+
+
 function doSom(x::Array{Float64}, codes::Array{Float64},
              dm::Array{Float64}, kernelFun::Function, len::Int, η::Float64,
              r::Number, toroidal::Bool, rDecay::Bool, ηDecay::Bool)

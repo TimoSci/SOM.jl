@@ -37,42 +37,9 @@ include("testFuns.jl")
 
 include("../src/mongo.jl")
 
-# include("benchmark.jl")
+include("benchmark.jl")
 
-function generate_integer_hash_function(a,b,cardinality)
-    # cardinality must be prime number
-    # a,b: 1 ≤ a ≤ p−1  , 0 ≤ b ≤ p−1
-    @assert a < cardinality
-    @assert a > 0
-    @assert b < cardinality
-    @assert b >= 0
-    @assert isprime(cardinality)
-    m = cardinality
-    x -> (x^a%m + b)%m  #TODO use modular exponentiation
-end
 
-function generate_vector_deterministic_pseudorandom(seed,hash_func,dimension)
-    [hash_func(x+seed) for x in 1:dimension]
-end
-
-function generate_dataset(number,dimension,max_value,y=(x->x))
-    # dimension = 16
-    # max_value = 1013
-    params = Dict(:a => 13, :b => 17, :hash_seed => 23, :prime => 1013)
-    hash_func = generate_integer_hash_function(params[:a],params[:b],params[:prime])
-
-    seed = params[:hash_seed]
-    matrix = zeros((number,dimension))
-    for i in 1:number
-        vector = generate_vector_deterministic_pseudorandom(seed,hash_func,dimension)
-        vector = map((x->x*max_value/params[:prime]),vector)
-        vector = map((x->(x+max_value)/2),vector)
-        vector = map(y,vector)
-        seed = hash_func(seed+i)
-        matrix[i,:] = vector
-    end
-    convert(DataFrame,matrix)
-end
 
 
 
@@ -81,8 +48,8 @@ end
 function benchmark_init(train, topol; toroidal = false,
                     normType = :zscore)
 
-    xdim = 40
-    ydim = 40
+    xdim = 10
+    ydim = 10
 
     initSOM(train, xdim, ydim, norm = normType,
                   topol = topol, toroidal = toroidal)
@@ -106,12 +73,12 @@ end
 # train = auto[:,1:7]
 
 
-train = copy(names_data)
+# train = copy(names_data)
 #
 # virgin_som = benchmark_init(train, :rectangular, toroidal = true)
 # som = benchmark_train(virgin_som,train)
 
- # train = generate_dataset(1000,10,1)
+ train = generate_dataset(2000,100,1)
  som = benchmark_init(train, :rectangular, toroidal = true)
  som = benchmark_train(som,train)
 

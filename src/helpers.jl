@@ -191,3 +191,10 @@ end
 
 
 prettyPrintArray(arr) = println("$(show(IOContext(stdout, limit=true), "text/plain", arr))")
+
+
+function array_to_cuda(array)
+  (xdim,ydim) = size(array)
+  cuda_array = CUDA.zeros(xdim,ydim)
+  cuda_array[1,:] = array[1,:]
+end
