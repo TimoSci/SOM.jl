@@ -78,7 +78,7 @@ end
 # virgin_som = benchmark_init(train, :rectangular, toroidal = true)
 # som = benchmark_train(virgin_som,train)
 
- train = generate_dataset(2000,100,1)
+ train = generate_dataset(1000,1000,1)
  som = benchmark_init(train, :rectangular, toroidal = true)
  som = benchmark_train(som,train)
 

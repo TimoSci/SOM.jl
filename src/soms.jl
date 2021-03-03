@@ -20,16 +20,31 @@ This worker function is called by the high-level-API-functions
 - `rDecay`: if true, r decays to 0.0 during the training.
 - `ηDecay`: if true, learning rate η decays to 0.0 during the training.
 """
-function doSomGPU(x::CuArray, codes::CuArray,
-             dm::CuArray, kernelFun::Function, len::Int, η::Float64,
-             r::Number, toroidal::Bool, rDecay::Bool, ηDecay::Bool)
-end
-
-
+# function doSomGPU(x::Array{Float64}, codes::Array{Float64},
+#              dm::Array{Float64}, kernelFun::Function, len::Int, η::Float64,
+#              r::Number, toroidal::Bool, rDecay::Bool, ηDecay::Bool)
+#
+#              cu_x = CuArray(x)
+#              cu_codes = CuArray(codes)
+#              cu_dm = CuArray(dm)
+#
+#              cu_codes =  doSom_(cu_x, cu_codes, cu_dm, kernelFun, len, η, r, toroidal, rDecay, ηDecay)
+#              Array(cu_codes)
+# end
 
 
 function doSom(x::Array{Float64}, codes::Array{Float64},
              dm::Array{Float64}, kernelFun::Function, len::Int, η::Float64,
+             r::Number, toroidal::Bool, rDecay::Bool, ηDecay::Bool)
+
+            # doSom_(x, codes, dm, kernelFun, len, η, r, toroidal, rDecay, ηDecay)
+             doSomGPU(x, codes, dm, kernelFun, len, η, r, toroidal, rDecay, ηDecay)
+
+end
+
+
+function doSom_(x, codes,
+             dm, kernelFun::Function, len::Int, η::Float64,
              r::Number, toroidal::Bool, rDecay::Bool, ηDecay::Bool)
 
     # make Δs for linear decay of r and η:
@@ -81,6 +96,70 @@ function doSom(x::Array{Float64}, codes::Array{Float64},
 
     return codes
 end
+
+
+function doSomGPU(x, codes,
+             dm, kernelFun::Function, len::Int, η::Float64,
+             r::Number, toroidal::Bool, rDecay::Bool, ηDecay::Bool)
+
+    # make Δs for linear decay of r and η:
+    r = Float64(r)
+    if rDecay
+        if r < 1.5
+            Δr = 0.0
+        else
+            Δr = (r-1.0) / len
+        end
+    else
+        Δr = 0.0
+    end
+
+    if ηDecay
+        Δη = η / len
+    else
+        Δη = 0.0
+    end
+
+    numDat = nrow(x)
+    numCodes = nrow(codes)
+    total_quantization_error = 0
+
+    # Training:
+    # 1) select random sample
+    # 2) find winner
+    # 3) train all neurons with gaussian kernel
+    p = Progress(len, dt=1.0, desc="Training...", barglyphs=BarGlyphs("[=> ]"),
+                 barlen=50, color=:yellow)
+
+    cu_codes = CuArray(codes)
+    println("inside gpu algo")
+
+    @time for s in 1:len
+
+        sampl = rowSample(x)
+        winner, quantization_error = findWinnerAndDistance(codes, sampl)
+        total_quantization_error += quantization_error
+
+        cu_sampl = CuArray(sampl)
+
+        for i in 1:numCodes
+            # v = view(codes, i, :)
+            Δi = cu_codes[i,:] .- cu_sampl
+            cu_codes[i,:] -= Δi .* kernelFun(dm[winner,i], r) .* η
+            # v -=  @. v - sampl * kernelFun(dm[winner,i], r) * η
+        end
+
+        η -= Δη
+        r -= Δr
+        # next!(p)
+        ProgressMeter.next!(p; showvalues = [(:mean_quantization_error,total_quantization_error/s)])
+    end
+
+    return codes
+end
+
+
+
 
 
 """
