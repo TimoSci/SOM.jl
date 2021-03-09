@@ -1,49 +1,21 @@
-using StringDistances
+#TODO remove this module from the SOM app to separate concerns
+#
+# Module for retrieving and storing SOM data in Mongodb
+
 using Mongoc
 
 client = Mongoc.Client()
 database = client["nomisnator-test"]
 collection = database["names"]
 mynames = Mongoc.find(collection) |> collect
-names_short = [ x["name"] for x= mynames if x["stats"]["count"] > 10000 && x["sex"] == "M"]
+names_short = [ x["name"] for x= mynames if x["stats"]["count"] > 5000 && x["sex"] == "F"]
 
 
 names_short |> unique!
 
 # println(names_short)
 
-function my_compare(a,b)
-    # compare(a,b, Qgram(3))
-    # [
-    # compare(a,b, DamerauLevenshtein()),
-    # compare(a,b, RatcliffObershelp())
-    # ] |> mean
-    compare(a,b, DamerauLevenshtein())*compare(a,b, RatcliffObershelp())
-end
 
-function generate_distance_matrix(names,my_compare=my_compare)
-    l = length(names)
-    m = zeros(l,l)
-    for i in 1:l
-        for j in 1:l
-            name1 = names[i]
-            name2 = names[j]
-            m[i,j] = my_compare(name1,name2)
-        end
-    end
-    m
-end
-
-names_data = generate_distance_matrix(names_short)
-
-labels = permutedims(names_short[:,:],(2,1))
-
-df = names_data |> DataFrame
-names!(df,Symbol.(names_short))
-# df = hcat(names_short,df)
-# rename!(df,(:x1 => :NAMES))
-
-names_data = copy(df)
 
 
 function cache_som(som,train_data,row_labels=[],record_name="default")

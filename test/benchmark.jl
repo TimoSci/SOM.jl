@@ -77,9 +77,9 @@ end
 # Example
 # =======
 
-# iris = dataset("datasets", "iris")
-# train = iris[:,1:4]
+iris = dataset("datasets", "iris")
+train = iris[:,1:4]
 
-# train = generate_dataset(1000,100,1)
-# som = benchmark_init(train, :rectangular, toroidal = false)
+train = generate_dataset(1000,100,1)
+som = benchmark_init(train, :rectangular, toroidal = false)
 # som = benchmark_train(som,train)

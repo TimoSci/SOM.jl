@@ -36,6 +36,8 @@ include("../src/plotTerminal.jl")
 include("testFuns.jl")
 
 include("../src/mongo.jl")
+include("../src/namesPreprocessor.jl")
+
 
 # include("benchmark.jl")
 
@@ -105,15 +107,18 @@ end
 # auto = dataset("ISLR","Auto")
 # train = auto[:,1:7]
 
+#
 
-train = copy(names_data)
+
+# train = copy(names_data)
 #
 # virgin_som = benchmark_init(train, :rectangular, toroidal = true)
 # som = benchmark_train(virgin_som,train)
 
  # train = generate_dataset(1000,10,1)
- som = benchmark_init(train, :rectangular, toroidal = true)
- som = benchmark_train(som,train)
+
+ # som = benchmark_init(train, :rectangular, toroidal = true)
+ # som = benchmark_train(som,train)
 
 
 # test hexagonal, rectangular and spherical training:
